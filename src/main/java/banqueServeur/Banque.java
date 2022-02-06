@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Représente une banque gérant un compte bancaire particulier
  *
  */
-public class Banque implements IBanque {
+public class  Banque implements IBanque, IObjet {
 
 	private int port = 6666;
 	private int hport = 7777;

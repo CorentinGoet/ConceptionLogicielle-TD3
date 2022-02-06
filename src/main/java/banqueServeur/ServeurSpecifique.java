@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import static java.lang.Integer.parseInt;
+
 /**
  * Représente la gestion de la connexion d'un client avec le serveur. Cette
  * gestion repose sur une {@link Socket} et s'effectue dans un {@link Thread}
@@ -16,6 +18,8 @@ class ServeurSpecifique extends Thread {
 
 	private Socket clientSocket;
 	private ServeurTCP monServeur;
+	private IProtocole protocoleEchange;
+	private Contexte contexte;
 
 	public ServeurSpecifique(Socket uneSocket, ServeurTCP unServeur) {
 		super("ServeurThread");
@@ -36,44 +40,11 @@ class ServeurSpecifique extends Thread {
 				System.out.println(" Msg 2 Recu " + inputReq);
 				String chaines[] = inputReq.split(" ");
 				System.out.println(" Ordre Recu " + chaines[0]);
-				if (chaines[0].contentEquals("retrait")) {
-					int valeur = (new Integer(chaines[1])).intValue();
-
-					System.out.println(" valeur demandee  " + valeur);
-
-					int valeurRetrait = monServeur.getBanqueCentrale().demandeRetrait(valeur);
-
-					String valeurExpediee = "" + valeurRetrait;
-					System.out.println(" Retrait dans serveur " + valeurExpediee);
-
-					os.println(valeurExpediee);
-
-					System.out.println(monServeur);
-				}
-				if (chaines[0].contentEquals("depot")) {
-					int valeur = (new Integer(chaines[1])).intValue();
-
-					System.out.println(" valeur demandee  " + valeur);
-
-					int valeurDepot = monServeur.getBanqueCentrale().demandeDepot(valeur);
-
-					String valeurExpediee = "" + valeurDepot;
-					System.out.println(" Depot dans serveur " + valeurExpediee);
-
-					os.println(valeurExpediee);
-
-					System.out.println(monServeur);
-				}
-				if (chaines[0].contentEquals(automateClient.Historique.requeteHisto)) {
-					String outputString = "Liste des operations :\n";
-					for (String h : monServeur.getBanqueCentrale().getHistoriqueOperations()) {
-						outputString = outputString + h + "\n";
-					}
-					System.out.println(" Liste a envoyer : \n " + outputString);
-					os.println(outputString);
-					os.flush();
-
-				} else {
+				try {
+					contexte = new Contexte(chaines, monServeur, os);
+					setProtocoleEchange(contexte.getProtocole());
+					protocoleEchange.run();
+				}catch (IOException e){
 					os.println("Erreur de protocole..... \n");
 				}
 			}
@@ -85,5 +56,14 @@ class ServeurSpecifique extends Thread {
 			e.printStackTrace();
 		}
 	}
+
+	public IProtocole getProtocoleEchange() {
+		return protocoleEchange;
+	}
+
+	public void setProtocoleEchange(IProtocole protocoleEchange) {
+		this.protocoleEchange = protocoleEchange;
+	}
+
 
 }

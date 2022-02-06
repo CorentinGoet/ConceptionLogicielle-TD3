@@ -17,7 +17,7 @@ public class ServeurTCP extends Thread {
 
 	private Socket clientSocket;
 
-	public IBanque banqueCentrale;
+	public IObjet objet;
 
 	private int numeroPort;
 
@@ -26,22 +26,22 @@ public class ServeurTCP extends Thread {
 		maxConnexions = 10;
 	}
 
-	public ServeurTCP(IBanque b, int port) {
+	public ServeurTCP(IObjet b, int port) {
 		this(port);
-		banqueCentrale = b;
+		objet = b;
 	}
 
-	public void setBanqueCentrale(IBanque uneBanque) {
-		banqueCentrale = uneBanque;
+	public void setObjet(IObjet unObjet) {
+		objet = unObjet;
 	}
 
-	public IBanque getBanqueCentrale() {
-		return banqueCentrale;
+	public IObjet getObjet() {
+		return objet;
 	}
 
 	@Override
 	public String toString() {
-		return "[ServeurTCP] Port : " + numeroPort + ", Contexte: " + banqueCentrale;
+		return "[ServeurTCP] Port : " + numeroPort + ", Contexte: " + objet;
 	}
 
 	/* l'ancienne methode go est remplacee par run */
